@@ -1,0 +1,16 @@
+{
+  "type": "shimmer:transmuting",
+  "input": {
+    "item": "minecraft:iron_pickaxe"
+  },
+  "output": [
+    {
+      "item": "minecraft:stick",
+      "count": 2
+    },
+    {
+      "item": "minecraft:iron_ingot",
+      "count": 3
+    }
+  ]
+}

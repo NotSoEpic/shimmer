@@ -1,0 +1,9 @@
+{
+  "type": "shimmer:transmuting",
+  "input": {
+    "tag": "minecraft:logs"
+  },
+  "output": [
+    "minecraft:dirt"
+  ]
+}
