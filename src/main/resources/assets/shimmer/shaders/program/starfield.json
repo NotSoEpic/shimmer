@@ -16,7 +16,8 @@
     { "name": "InSize",         "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] },
     { "name": "OutSize",        "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] },
     { "name": "ScreenSize",     "type": "float",     "count": 2,  "values": [ 1.0, 1.0 ] },
-    { "name": "CameraRotation", "type": "float",     "count": 4,  "values": [ 1.0, 0.0, 0.0, 0.0 ] },
+    { "name": "CamQuart",       "type": "float",     "count": 4,  "values": [ 1.0, 0.0, 0.0, 0.0 ] },
+    { "name": "CamPos",         "type": "float",     "count": 3,  "values": [ 1.0, 0.0, 0.0 ] },
     { "name": "_FOV",           "type": "float",     "count": 1,  "values": [ 70.0 ] },
     { "name": "STime",          "type": "float",     "count": 1,  "values": [ 1.0 ] },
     { "name": "Strength",       "type": "float",     "count": 1,  "values": [ 1.0 ] }

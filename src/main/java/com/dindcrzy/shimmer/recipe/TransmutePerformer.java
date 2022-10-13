@@ -14,7 +14,7 @@ import java.util.Optional;
 public class TransmutePerformer {
     public record ShimmerTestResult(int cost, TransmuteRecipe match) {}
     public record UncraftTestResult(int cost, CraftingRecipe match) {}
-    public record ResultCount(int stackReduction, HashMap<Item, Integer> result) {}
+    public record ResultCount(int stackReduction, HashMap<ItemStack, Integer> result) {}
     public record RecipeOutput(int stackReduction, ArrayList<ItemStack> results) {}
     
     public static RecipeOutput getResults(ItemStack input, World world) {
@@ -23,17 +23,17 @@ public class TransmutePerformer {
         TransmuteRecipe recipe = recipeResult.match;
 
         int reduction = 0;
-        HashMap<Item, Integer> resultMap = new HashMap<>();
+        HashMap<ItemStack, Integer> resultMap = new HashMap<>();
         if (recipe != null) {
             // found specified shimmering recipe
             ResultCount countResult = getResultCount(cost, input.getCount(), recipe);
             reduction = countResult.stackReduction;
             resultMap = countResult.result;
-        } else {
+        }/* else {
             // try and find crafting recipe
-        }
+        }*/
         
-        ArrayList<ItemStack> results = itemiseOutputs(resultMap);
+        ArrayList<ItemStack> results = mergeOutputs(resultMap);
         return new RecipeOutput(reduction, results);
     }
     
@@ -66,17 +66,17 @@ public class TransmutePerformer {
         return new UncraftTestResult(cost, cachedMatch);
     }*/
     
-    // counts how many of each item should be gotten from the recipe
+    // returns list of itemstacks to produce
     public static ResultCount getResultCount(int cost, int inputCount, TransmuteRecipe recipe) {
-        HashMap<Item, Integer> resultMap = new HashMap<>();
+        HashMap<ItemStack, Integer> resultMap = new HashMap<>();
         int reduction = 0;
         if (cost > 0) {
             for (int i = cost; i <= inputCount; i += cost) {
                 reduction += cost;
                 for (ItemStack itemStack : recipe.getOutputs()) {
-                    int count = resultMap.getOrDefault(itemStack.getItem(), 0);
+                    int count = resultMap.getOrDefault(itemStack, 0);
                     count += itemStack.getCount();
-                    resultMap.put(itemStack.getItem(), count);
+                    resultMap.put(itemStack, count);
                 }
             }
         }
@@ -85,13 +85,13 @@ public class TransmutePerformer {
     }
     
     // gets realistic itemstacks for output counts
-    public static ArrayList<ItemStack> itemiseOutputs(HashMap<Item, Integer> resultCount) {
+    public static ArrayList<ItemStack> mergeOutputs(HashMap<ItemStack, Integer> resultCount) {
         ArrayList<ItemStack> results = new ArrayList<>();
-        for (Map.Entry<Item, Integer> entry : resultCount.entrySet()) {
-            Item item = entry.getKey();
+        for (Map.Entry<ItemStack, Integer> entry : resultCount.entrySet()) {
+            ItemStack item = entry.getKey();
             Integer count = entry.getValue();
             while (count > 0) {
-                ItemStack stack = item.getDefaultStack();
+                ItemStack stack = item.copy();
                 stack.setCount(Math.min(item.getMaxCount(), count));
 
                 results.add(stack);

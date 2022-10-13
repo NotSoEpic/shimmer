@@ -1,4 +1,15 @@
 {
   "effect.shimmer.phasing": "Phasing",
-  "item.shimmer.shimmer_bucket": "Shimmer Bucket"
+  "effect.shimmer.aether_sight": "Aether Sight",
+
+  "item.shimmer.shimmer_bucket": "Shimmer Bucket",
+  "item.minecraft.potion.effect.aether_sight": "Potion of Aether Sight",
+  "item.minecraft.splash_potion.effect.aether_sight": "Splash Potion of Aether Sight",
+  "item.minecraft.lingering_potion.effect.aether_sight": "Lingering Potion of Aether Sight",
+  "item.minecraft.potion.effect.phasing": "Potion of Phasing",
+  "item.minecraft.splash_potion.effect.phasing": "Splash Potion of Phasing",
+  "item.minecraft.lingering_potion.effect.phasing": "Lingering Potion of Phasing",
+
+  "death.attack.outOfWorld.phase": "%1$s phased through the world",
+  "death.fell.accident.shimmer": "%1$s phased into a tall cave"
 }

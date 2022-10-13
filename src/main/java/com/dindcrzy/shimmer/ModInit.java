@@ -8,14 +8,15 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.tag.FluidTags;
+import net.minecraft.item.PotionItem;
+import net.minecraft.potion.Potion;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagManagerLoader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
@@ -29,7 +30,10 @@ public class ModInit implements ModInitializer {
 	public static FlowableFluid FLOWING_SHIMMER;
 	public static Block SHIMMER;
 	public static Item SHIMMER_BUCKET;
-	public static final StatusEffect PHASING = new PhasingDebuff();
+	public static final StatusEffect PHASING = new PhasingStatus();
+	public static final Potion PHASING_POTION = new Potion(new StatusEffectInstance(PHASING, 40, 0, true, true));
+	public static final StatusEffect AETHER_SIGHT = new AetherSightStatus();
+	public static final Potion AETHER_SIGHT_POTION = new Potion(new StatusEffectInstance(AETHER_SIGHT, 20 * 60 * 8, 0, true, true));
 
 	public static Tag<Fluid> SHIMMER_TAG;
 
@@ -61,6 +65,9 @@ public class ModInit implements ModInitializer {
 				new BucketItem(STILL_SHIMMER, new Item.Settings().recipeRemainder(Items.BUCKET).maxCount(1))
 		);
 		Registry.register(Registry.STATUS_EFFECT, new Identifier(MOD_ID, "phasing"), PHASING);
+		Registry.register(Registry.POTION, new Identifier(MOD_ID, "phasing"), PHASING_POTION);
+		Registry.register(Registry.STATUS_EFFECT, new Identifier(MOD_ID, "aether_sight"), AETHER_SIGHT);
+		Registry.register(Registry.POTION, new Identifier(MOD_ID, "aether_sight"), AETHER_SIGHT_POTION);
 	}
 	private void initialiseNerdStuff() {
 		// 🤓

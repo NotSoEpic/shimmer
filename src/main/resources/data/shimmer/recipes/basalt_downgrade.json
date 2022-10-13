@@ -1,0 +1,12 @@
+{
+  "type": "shimmer:transmuting",
+  "input": {
+    "item": "minecraft:basalt"
+  },
+  "output": [
+    {
+      "item": "minecraft:netherrack",
+      "count": 4
+    }
+  ]
+}

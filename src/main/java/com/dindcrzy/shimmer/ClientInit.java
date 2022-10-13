@@ -6,6 +6,7 @@ import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
 import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import ladysnake.satin.api.managed.uniform.Uniform1f;
+import ladysnake.satin.api.managed.uniform.Uniform3f;
 import ladysnake.satin.api.managed.uniform.Uniform4f;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -49,12 +50,16 @@ public class ClientInit implements ClientModInitializer {
     // https://github.com/Ladysnake/Satin/blob/master/test_mods/depth/src/main/java/ladysnake/satindepthtest/SatinDepthTest.java
     private final MinecraftClient mc = MinecraftClient.getInstance();
     final ManagedShaderEffect STARFIELD = ShaderEffectManager.getInstance()
-            .manage(new Identifier(ModInit.MOD_ID, "shaders/post/starfield.json"), shader -> {
-                shader.setSamplerUniform("DepthSampler", ((ReadableDepthFramebuffer)mc.getFramebuffer()).getStillDepthMap());
-            });
+            .manage(new Identifier(ModInit.MOD_ID, "shaders/post/starfield.json"), shader -> 
+                    shader.setSamplerUniform(
+                            "DepthSampler", 
+                            ((ReadableDepthFramebuffer)mc.getFramebuffer()).getStillDepthMap()
+                    )
+            );
     
     private final Uniform1f uniformSTime = STARFIELD.findUniform1f("STime");
-    private final Uniform4f cameraRotation = STARFIELD.findUniform4f("CameraRotation");
+    private final Uniform4f camQuart = STARFIELD.findUniform4f("CamQuart");
+    private final Uniform3f camPos = STARFIELD.findUniform3f("CamPos");
     private final Uniform1f strengthF = STARFIELD.findUniform1f("Strength");
     private int ticks;
     private double strength;
@@ -63,20 +68,29 @@ public class ClientInit implements ClientModInitializer {
         ShaderEffectRenderCallback.EVENT.register(STARFIELD::render);
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             ticks ++;
-            if (Helper.isPhasing(mc.player)) {
-                strength = Math.min(strength + 0.03, 1);
-            } else {
-                strength = Math.max(strength - 0.05, 0);
+            float target = 0f;
+            float speed = 0.02f;
+            if (Helper.hasStatus(mc.player, ModInit.PHASING)) {
+                target = 1f;
+            } else if(Helper.hasStatus(mc.player, ModInit.AETHER_SIGHT)) {
+                target = Math.min((Helper.getPotionAmplifier(mc.player, ModInit.AETHER_SIGHT) + 1) / 5f, 1);
+                speed = 0.01f;
+            } else if (mc.player instanceof ShimmerStatusAccessor accessor && accessor.wasShimmering()) {
+                speed = 0.05f;
             }
+            strength += Math.min(speed, Math.abs(target-strength)) * Math.signum(target - strength);
         });
         PostWorldRenderCallback.EVENT.register((camera, tickDelta, nanoTime) -> {
             // passing in a time variable for "shifting" effect
             uniformSTime.set((ticks + tickDelta) / 20f);
             // i am not looking forwards to quaternion math
-            Quaternion rotation = camera.getRotation();
-            cameraRotation.set(rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW());
+            Quaternion rotationQ = camera.getRotation();
+            camQuart.set(rotationQ.getX(), rotationQ.getY(), rotationQ.getZ(), rotationQ.getW());
+            camPos.set((float)camera.getPos().x, (float)camera.getPos().y, (float)camera.getPos().z);
             // how "strong" the effect is: increases when player is shimmering, decreases when not
             strengthF.set((float) strength);
+            
+            // todo: pass in FOV somehow. Vanilla's _FOV doesn't work
         });
     }
 }

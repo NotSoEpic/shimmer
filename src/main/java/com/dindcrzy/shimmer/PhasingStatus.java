@@ -6,8 +6,8 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 
-public class PhasingDebuff extends StatusEffect {
-    protected PhasingDebuff() {
+public class PhasingStatus extends StatusEffect {
+    protected PhasingStatus() {
         super(
                 StatusEffectCategory.HARMFUL,
                 0xFADCF5

@@ -5,8 +5,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
@@ -30,8 +36,9 @@ public class TransmuteSerializer implements RecipeSerializer<TransmuteRecipe> {
         if (recipeJson.input == null || recipeJson.output == null) {
             throw new JsonSyntaxException("A required attribute is missing");
         }
-        if (recipeJson.count <= 0) {
-            recipeJson.count = 1;
+        int incount = 1;
+        if (recipeJson.input.has("count")) {
+            incount = recipeJson.input.get("count").getAsInt();
         }
 
         Ingredient input = Ingredient.fromJson(recipeJson.input);
@@ -39,9 +46,15 @@ public class TransmuteSerializer implements RecipeSerializer<TransmuteRecipe> {
         for (JsonElement jsonElement : recipeJson.output) {
             String itemId;
             int itemCount = 1;
+            NbtElement nbt = null;
             if (jsonElement instanceof JsonObject jsonObject) {
                 itemId = jsonObject.get("item").getAsString();
-                itemCount = jsonObject.get("count").getAsInt();
+                if (jsonObject.has("count")) {
+                    itemCount = jsonObject.get("count").getAsInt();
+                }
+                if (jsonObject.has("nbt")) {
+                    nbt = JsonOps.INSTANCE.convertTo(NbtOps.INSTANCE, jsonObject.get("nbt"));
+                }
             } else {
                 itemId = jsonElement.getAsString();
             }
@@ -51,16 +64,24 @@ public class TransmuteSerializer implements RecipeSerializer<TransmuteRecipe> {
                     () -> new JsonSyntaxException("No such item " + finalItemId)
             );
             ItemStack output = new ItemStack(outputItem, itemCount);
+            if (nbt != null) {
+                if (nbt instanceof NbtCompound compound) {
+                    output.setNbt(compound);
+                } else {
+                    ModInit.LOGGER.warn("Invalid output nbt for item " + itemId + " in recipe " + id.toString());
+                }
+            }
             outputs.add(output);
         }
         
-        return new TransmuteRecipe(id, outputs, input);
+        return new TransmuteRecipe(id, outputs, input, incount);
     }
 
     @Override
     // recipe -> packet
     public void write(PacketByteBuf buf, TransmuteRecipe recipe) {
         recipe.getInput().write(buf);
+        buf.writeInt(recipe.getInputCount());
         // length of outputs
         buf.writeByte(recipe.getOutputs().size());
         for (ItemStack item : recipe.getOutputs()) {
@@ -73,12 +94,13 @@ public class TransmuteSerializer implements RecipeSerializer<TransmuteRecipe> {
     public TransmuteRecipe read(Identifier id, PacketByteBuf buf) {
         // read order must be same as write order!
         Ingredient input = Ingredient.fromPacket(buf);
+        int input_count = buf.readInt();
         ArrayList<ItemStack> outputs = new ArrayList<>();
         int length = buf.readByte();
         for (int _i = 0; _i < length; _i++) {
             ItemStack output = buf.readItemStack();
             outputs.add(output);
         }
-        return new TransmuteRecipe(id, outputs, input);
+        return new TransmuteRecipe(id, outputs, input, input_count);
     }
 }

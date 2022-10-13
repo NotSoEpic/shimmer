@@ -2,6 +2,9 @@ package com.dindcrzy.shimmer;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -66,10 +69,19 @@ public class Helper {
         return false;
     }
 
-    public static boolean isPhasing(@Nullable PlayerEntity player) {
+    public static boolean hasStatus(@Nullable LivingEntity player, StatusEffect status) {
         if (player != null) {
-            return player.hasStatusEffect(ModInit.PHASING);
+            return player.hasStatusEffect(status);
         }   
         return false;
+    }
+    public static int getPotionAmplifier(@Nullable LivingEntity player, StatusEffect status) {
+        if (player != null) {
+            StatusEffectInstance inst = player.getStatusEffect(status);
+            if (inst != null) {
+                return inst.getAmplifier();
+            }
+        }
+        return 0;
     }
 }

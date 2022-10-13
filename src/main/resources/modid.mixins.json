@@ -4,9 +4,12 @@
   "package": "com.dindcrzy.shimmer.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "BrewingRecipeRegistryMixin",
     "DamageTrackerMixin",
+    "FishingBobberEntityMixin",
     "ItemEntityMixin",
-    "LivingEntityMixin"
+    "LivingEntityMixin",
+    "PlayerEntityMixin"
   ],
   "client": [
     "GameRendererMixin"

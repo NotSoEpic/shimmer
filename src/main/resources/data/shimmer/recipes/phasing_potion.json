@@ -1,0 +1,14 @@
+{
+  "type": "shimmer:transmuting",
+  "input": {
+    "item": "minecraft:potion"
+  },
+  "output": [
+    {
+      "item": "minecraft:potion",
+      "nbt": {
+        "Potion": "shimmer:phasing"
+      }
+    }
+  ]
+}

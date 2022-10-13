@@ -1,6 +1,7 @@
 package com.dindcrzy.shimmer.mixin;
 
 import com.dindcrzy.shimmer.Helper;
+import com.dindcrzy.shimmer.ModInit;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.resource.SynchronousResourceReloader;
@@ -17,7 +18,7 @@ public abstract class GameRendererMixin implements SynchronousResourceReloader, 
     // hides block outline when phasing
     @Inject(method = "shouldRenderBlockOutline", at = @At("RETURN"), cancellable = true)
     private void blockOutline(CallbackInfoReturnable<Boolean> cir) {
-        if (Helper.isPhasing(getClient().player)) {
+        if (Helper.hasStatus(getClient().player, ModInit.PHASING)) {
             cir.setReturnValue(false);
         }
     }

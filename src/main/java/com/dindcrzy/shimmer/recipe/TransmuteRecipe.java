@@ -16,16 +16,19 @@ public class TransmuteRecipe implements Recipe<SimpleInventory> {
     private final Identifier id;
     private final ArrayList<ItemStack> result;
     private final Ingredient input;
+    private final int input_count;
     
-    public TransmuteRecipe(Identifier id, ArrayList<ItemStack> result, Ingredient input) {
+    public TransmuteRecipe(Identifier id, ArrayList<ItemStack> result, Ingredient input, int input_count) {
         this.id = id;
         this.result = result;
         this.input = input;
+        this.input_count = input_count;
     }
 
+    // todo: make it respect input count
     @Override
     public boolean matches(SimpleInventory inventory, World world) {
-        return this.input.test(inventory.getStack(0));
+        return inventory.getStack(0).getCount() == this.input_count && this.input.test(inventory.getStack(0));
     }
 
     @Override
@@ -41,6 +44,7 @@ public class TransmuteRecipe implements Recipe<SimpleInventory> {
     public Ingredient getInput() {
         return this.input;
     }
+    public int getInputCount() {return this.input_count; }
 
     // why is this mandatory?
     @Override

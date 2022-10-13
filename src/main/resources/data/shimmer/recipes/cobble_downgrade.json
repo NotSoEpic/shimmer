@@ -1,0 +1,9 @@
+{
+  "type": "shimmer:transmuting",
+  "input": {
+    "item": "minecraft:cobblestone"
+  },
+  "output": [
+    "minecraft:dirt"
+  ]
+}
