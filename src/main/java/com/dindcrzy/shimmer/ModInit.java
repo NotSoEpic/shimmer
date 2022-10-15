@@ -7,14 +7,12 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.item.BucketItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.item.PotionItem;
+import net.minecraft.item.*;
 import net.minecraft.potion.Potion;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
@@ -30,6 +28,7 @@ public class ModInit implements ModInitializer {
 	public static FlowableFluid FLOWING_SHIMMER;
 	public static Block SHIMMER;
 	public static Item SHIMMER_BUCKET;
+	public static Item SHIMMER_CLOAK;
 	public static final StatusEffect PHASING = new PhasingStatus();
 	public static final Potion PHASING_POTION = new Potion(new StatusEffectInstance(PHASING, 40, 0, true, true));
 	public static final StatusEffect AETHER_SIGHT = new AetherSightStatus();
@@ -62,8 +61,11 @@ public class ModInit implements ModInitializer {
 		SHIMMER_BUCKET = Registry.register(
 				Registry.ITEM,
 				new Identifier(MOD_ID, "shimmer_bucket"),
-				new BucketItem(STILL_SHIMMER, new Item.Settings().recipeRemainder(Items.BUCKET).maxCount(1))
+				new BucketItem(STILL_SHIMMER, new Item.Settings().recipeRemainder(Items.BUCKET).maxCount(1).group(ItemGroup.MISC))
 		);
+		SHIMMER_CLOAK = Registry.register(Registry.ITEM,
+				new Identifier(MOD_ID, "shimmer_cloak"),
+				new ArmorItem(ShimmerArmorMaterial.INSTANCE, EquipmentSlot.CHEST, new Item.Settings().group(ItemGroup.COMBAT)));
 		Registry.register(Registry.STATUS_EFFECT, new Identifier(MOD_ID, "phasing"), PHASING);
 		Registry.register(Registry.POTION, new Identifier(MOD_ID, "phasing"), PHASING_POTION);
 		Registry.register(Registry.STATUS_EFFECT, new Identifier(MOD_ID, "aether_sight"), AETHER_SIGHT);

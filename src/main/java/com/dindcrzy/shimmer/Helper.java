@@ -8,10 +8,19 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.tag.ItemTags;
+import net.minecraft.tag.TagKey;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import org.jetbrains.annotations.Nullable;
 
 public class Helper {
@@ -83,5 +92,26 @@ public class Helper {
             }
         }
         return 0;
+    }
+    
+    public static boolean canUncraft(ItemStack itemStack) {
+        Item item = itemStack.getItem();
+        return (
+            !itemStack.hasNbt() && 
+            !item.isDamageable() && 
+            !itemStack.isIn(
+                TagKey.of(Registry.ITEM.getKey(), 
+                new Identifier(ModInit.MOD_ID, "dont_uncraft")))
+        );
+    }
+    
+    public static ItemStack getValidUncraftingStack(Ingredient ingredient) {
+        for (ItemStack itemStack : ingredient.getMatchingStacks()) {
+            Item item = itemStack.getItem();
+            if (!item.hasRecipeRemainder()) {
+                return itemStack;
+            }
+        }
+        return null;
     }
 }

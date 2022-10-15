@@ -1,0 +1,11 @@
+{
+  "type": "shimmer:transmuting",
+  "input": {
+    "item": "minecraft:leather_chestplate"
+  },
+  "output": [
+    {
+      "item": "shimmer:shimmer_cloak"
+    }
+  ]
+}

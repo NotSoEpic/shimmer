@@ -3,13 +3,11 @@ package com.dindcrzy.shimmer.mixin;
 import com.dindcrzy.shimmer.Helper;
 import com.dindcrzy.shimmer.ModInit;
 import com.dindcrzy.shimmer.ShimmerStatusAccessor;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MovementType;
+import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -32,6 +30,8 @@ public abstract class LivingEntityMixin extends Entity implements ShimmerStatusA
     @Shadow public abstract boolean removeStatusEffect(StatusEffect type);
 
     @Shadow public abstract boolean collides();
+
+    @Shadow public abstract ItemStack getEquippedStack(EquipmentSlot slot);
 
     public LivingEntityMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -76,7 +76,10 @@ public abstract class LivingEntityMixin extends Entity implements ShimmerStatusA
             setPosition(getPos().add(vel));
         } else {
             super.move(movementType, movement);
-            if (isPlayer() && !isSpectator() && Helper.isInFluid(this, ModInit.STILL_SHIMMER, 0.2)) {
+            if (isPlayer() && 
+                    !isSpectator() && 
+                    getEquippedStack(EquipmentSlot.CHEST).getItem() != ModInit.SHIMMER_CLOAK && 
+                    Helper.isInFluid(this, ModInit.STILL_SHIMMER, 0.2)) {
                 addStatusEffect(new StatusEffectInstance(
                         ModInit.PHASING,
                         3,

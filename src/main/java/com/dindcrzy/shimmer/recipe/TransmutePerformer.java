@@ -1,15 +1,12 @@
 package com.dindcrzy.shimmer.recipe;
 
+import com.dindcrzy.shimmer.Helper;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.CraftingRecipe;
+import net.minecraft.recipe.*;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class TransmutePerformer {
     public record ShimmerTestResult(int cost, TransmuteRecipe match) {}
@@ -20,18 +17,25 @@ public class TransmutePerformer {
     public static RecipeOutput getResults(ItemStack input, World world) {
         ShimmerTestResult recipeResult = findRecipe(input, world);
         int cost = recipeResult.cost;
-        TransmuteRecipe recipe = recipeResult.match;
+        TransmuteRecipe transmuteRecipe = recipeResult.match;
 
         int reduction = 0;
         HashMap<ItemStack, Integer> resultMap = new HashMap<>();
-        if (recipe != null) {
+        if (transmuteRecipe != null) {
             // found specified shimmering recipe
-            ResultCount countResult = getResultCount(cost, input.getCount(), recipe);
+            ResultCount countResult = getResultCount(cost, input.getCount(), transmuteRecipe);
             reduction = countResult.stackReduction;
             resultMap = countResult.result;
-        }/* else {
-            // try and find crafting recipe
-        }*/
+        } else if (Helper.canUncraft(input)) {
+            UncraftTestResult uncraftTestResult = findUncrafting(input, world);
+            CraftingRecipe uncraftingRecipe = uncraftTestResult.match;
+            cost = uncraftTestResult.cost;
+            if (uncraftingRecipe != null) {
+                ResultCount countResult = getResultCount(cost, input.getCount(), uncraftingRecipe);
+                reduction = countResult.stackReduction;
+                resultMap = countResult.result;
+            }
+        }
         
         ArrayList<ItemStack> results = mergeOutputs(resultMap);
         return new RecipeOutput(reduction, results);
@@ -55,33 +59,46 @@ public class TransmutePerformer {
         return new ShimmerTestResult(cost, cachedMatch);
     }
     
-    // todo: use mega brain powers to actually finish this
-    /*public static UncraftTestResult findUncrafting(ItemStack input, World world) {
-        int cost = 0;
-        CraftingRecipe cachedMatch = null;
-        while(cachedMatch == null && cost++ <= input.getCount()) {
-            world.getRecipeManager().listAllOfType(CraftingRecipe.Type)
-        }
-        
-        return new UncraftTestResult(cost, cachedMatch);
-    }*/
-    
-    // returns list of itemstacks to produce
-    public static ResultCount getResultCount(int cost, int inputCount, TransmuteRecipe recipe) {
-        HashMap<ItemStack, Integer> resultMap = new HashMap<>();
-        int reduction = 0;
-        if (cost > 0) {
-            for (int i = cost; i <= inputCount; i += cost) {
-                reduction += cost;
-                for (ItemStack itemStack : recipe.getOutputs()) {
-                    int count = resultMap.getOrDefault(itemStack, 0);
-                    count += itemStack.getCount();
-                    resultMap.put(itemStack, count);
+    public static UncraftTestResult findUncrafting(ItemStack input, World world) {
+        List<CraftingRecipe> craftingRecipes = world.getRecipeManager().listAllOfType(RecipeType.CRAFTING);
+        for (CraftingRecipe recipe : craftingRecipes) {
+            if (recipe instanceof ShapedRecipe || recipe instanceof ShapelessRecipe) {
+                ItemStack out = recipe.getOutput();
+                if (input.getItem() == out.getItem() &&
+                        out.getCount() <= input.getCount()) {
+                    return new UncraftTestResult(out.getCount(), recipe);
                 }
             }
         }
         
-        return new ResultCount(reduction, resultMap);
+        return new UncraftTestResult(0, null);
+    }
+    
+    // returns list of itemstacks to produce
+    public static ResultCount getResultCount(int cost, int inputCount, TransmuteRecipe recipe) {
+        int craftCount = Math.floorDiv(inputCount, cost);
+        HashMap<ItemStack, Integer> resultMap = new HashMap<>();
+        for (ItemStack itemStack : recipe.getOutputs()) {
+            int count = resultMap.getOrDefault(itemStack, 0);
+            count += itemStack.getCount() * craftCount;
+            resultMap.put(itemStack, count);
+        }
+        
+        return new ResultCount(craftCount * cost, resultMap);
+    }
+    public static ResultCount getResultCount(int cost, int inputCount, CraftingRecipe recipe) {
+        int craftCount = Math.floorDiv(inputCount, cost);
+        HashMap<ItemStack, Integer> resultMap = new HashMap<>();
+        for (Ingredient ingredient : recipe.getIngredients()) {
+            ItemStack itemStack = Helper.getValidUncraftingStack(ingredient);
+            if (itemStack != null) {
+                int count = resultMap.getOrDefault(itemStack, 0);
+                count += itemStack.getCount() * craftCount;
+                resultMap.put(itemStack, count);
+            }
+        }
+        
+        return new ResultCount(craftCount * cost, resultMap);
     }
     
     // gets realistic itemstacks for output counts

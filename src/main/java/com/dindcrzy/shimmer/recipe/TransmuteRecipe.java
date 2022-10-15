@@ -25,7 +25,6 @@ public class TransmuteRecipe implements Recipe<SimpleInventory> {
         this.input_count = input_count;
     }
 
-    // todo: make it respect input count
     @Override
     public boolean matches(SimpleInventory inventory, World world) {
         return inventory.getStack(0).getCount() == this.input_count && this.input.test(inventory.getStack(0));
