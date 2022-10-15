@@ -1,13 +1,14 @@
 package com.dindcrzy.shimmer.recipe;
 
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.*;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 // https://github.com/natanfudge/fabric-docs/blob/master/newdocs/Modding-Tutorials/Crafting-Recipes/defining-custom-crafting-recipes.md
@@ -27,7 +28,7 @@ public class TransmuteRecipe implements Recipe<SimpleInventory> {
 
     @Override
     public boolean matches(SimpleInventory inventory, World world) {
-        return inventory.getStack(0).getCount() == this.input_count && this.input.test(inventory.getStack(0));
+        return this.input.test(inventory.getStack(0));
     }
 
     @Override

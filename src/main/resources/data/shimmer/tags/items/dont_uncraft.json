@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "minecraft:honey_block"
+    "minecraft:honey_block",
+    "minecraft:iron_nugget",
+    "minecraft:gold_nugget",
+    "minecraft:netherite_scrap"
   ]
 }

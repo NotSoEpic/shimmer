@@ -11,10 +11,9 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.fluid.FlowableFluid;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.item.*;
 import net.minecraft.potion.Potion;
-import net.minecraft.tag.Tag;
+import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
@@ -34,8 +33,8 @@ public class ModInit implements ModInitializer {
 	public static final StatusEffect AETHER_SIGHT = new AetherSightStatus();
 	public static final Potion AETHER_SIGHT_POTION = new Potion(new StatusEffectInstance(AETHER_SIGHT, 20 * 60 * 8, 0, true, true));
 
-	public static Tag<Fluid> SHIMMER_TAG;
-
+	public static RecipeType<TransmuteRecipe> TRANSMUTE_RECIPE;
+	
 	@Override
 	public void onInitialize() {
 		initialiseContent();
@@ -76,7 +75,7 @@ public class ModInit implements ModInitializer {
 		Registry.register(Registry.RECIPE_SERIALIZER,
 				TransmuteSerializer.ID,
 				TransmuteSerializer.INSTANCE);
-		Registry.register(Registry.RECIPE_TYPE,
+		TRANSMUTE_RECIPE = Registry.register(Registry.RECIPE_TYPE,
 				new Identifier(MOD_ID, TransmuteRecipe.Type.ID), TransmuteRecipe.Type.INSTANCE);
 	}
 }

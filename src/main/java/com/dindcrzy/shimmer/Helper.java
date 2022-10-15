@@ -5,22 +5,18 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.tag.ItemTags;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import org.jetbrains.annotations.Nullable;
 
 public class Helper {
@@ -104,14 +100,27 @@ public class Helper {
                 new Identifier(ModInit.MOD_ID, "dont_uncraft")))
         );
     }
-    
     public static ItemStack getValidUncraftingStack(Ingredient ingredient) {
         for (ItemStack itemStack : ingredient.getMatchingStacks()) {
             Item item = itemStack.getItem();
-            if (!item.hasRecipeRemainder()) {
+            if (!item.hasRecipeRemainder() &&
+                !itemStack.isIn(
+                    TagKey.of(Registry.ITEM.getKey(), 
+                    new Identifier(ModInit.MOD_ID, "dont_uncraft_into"))
+                )) {
                 return itemStack;
             }
         }
         return null;
+    }
+    public static boolean hasInvalidUncraftingStack(Recipe recipe) {
+        for (Object ingObj : recipe.getIngredients()) {
+            if (ingObj instanceof Ingredient ingredient) {
+                if (!ingredient.isEmpty() && getValidUncraftingStack(ingredient) == null) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
