@@ -113,7 +113,7 @@ public class Helper {
         }
         return null;
     }
-    public static boolean hasInvalidUncraftingStack(Recipe recipe) {
+    public static boolean hasInvalidUncraftingStack(Recipe<?> recipe) {
         for (Object ingObj : recipe.getIngredients()) {
             if (ingObj instanceof Ingredient ingredient) {
                 if (!ingredient.isEmpty() && getValidUncraftingStack(ingredient) == null) {
