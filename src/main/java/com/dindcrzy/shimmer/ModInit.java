@@ -2,6 +2,7 @@ package com.dindcrzy.shimmer;
 
 import com.dindcrzy.shimmer.recipe.TransmuteRecipe;
 import com.dindcrzy.shimmer.recipe.TransmuteSerializer;
+import com.dindcrzy.shimmer.worldgen.WorldFeatures;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -32,13 +33,15 @@ public class ModInit implements ModInitializer {
 	public static final Potion PHASING_POTION = new Potion(new StatusEffectInstance(PHASING, 40, 0, true, true));
 	public static final StatusEffect AETHER_SIGHT = new AetherSightStatus();
 	public static final Potion AETHER_SIGHT_POTION = new Potion(new StatusEffectInstance(AETHER_SIGHT, 20 * 60 * 8, 0, true, true));
-
+	public static final Potion STRONG_AETHER_SIGHT_POTION = new Potion(new StatusEffectInstance(AETHER_SIGHT, 20 * 60 * 3, 2, true, true));
+	
 	public static RecipeType<TransmuteRecipe> TRANSMUTE_RECIPE;
 	
 	@Override
 	public void onInitialize() {
 		initialiseContent();
 		initialiseNerdStuff();
+		WorldFeatures.registerFeatures();
 	}
 	
 	private void initialiseContent() {
@@ -69,6 +72,7 @@ public class ModInit implements ModInitializer {
 		Registry.register(Registry.POTION, new Identifier(MOD_ID, "phasing"), PHASING_POTION);
 		Registry.register(Registry.STATUS_EFFECT, new Identifier(MOD_ID, "aether_sight"), AETHER_SIGHT);
 		Registry.register(Registry.POTION, new Identifier(MOD_ID, "aether_sight"), AETHER_SIGHT_POTION);
+		Registry.register(Registry.POTION, new Identifier(MOD_ID, "strong_aether_sight"), STRONG_AETHER_SIGHT_POTION);
 	}
 	private void initialiseNerdStuff() {
 		// 🤓

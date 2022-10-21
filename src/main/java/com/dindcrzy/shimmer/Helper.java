@@ -80,6 +80,14 @@ public class Helper {
         }   
         return false;
     }
+    public static boolean hasStatus(LivingEntity player, StatusEffect status, int minLevel) {
+        if (player != null && player.hasStatusEffect(status)) {
+            StatusEffectInstance instance = player.getStatusEffect(status);
+            assert instance != null;
+            return instance.getAmplifier() >= minLevel;
+        }
+        return false;
+    }
     public static int getPotionAmplifier(@Nullable LivingEntity player, StatusEffect status) {
         if (player != null) {
             StatusEffectInstance inst = player.getStatusEffect(status);

@@ -9,10 +9,18 @@
     "FishingBobberEntityMixin",
     "ItemEntityMixin",
     "LivingEntityMixin",
-    "PlayerEntityMixin"
+    "PlayerEntityMixin",
+    "WorldMixin",
+    "server.ThreadedAnvilChunkStorageAccessor"
   ],
   "client": [
-    "GameRendererMixin"
+    "client.ClientPlayerEntityMixin",
+    "client.ClientWorldMixin",
+    "client.GameRendererMixin",
+    "client.WorldRendererAccessor"
+  ],
+  "server": [
+    "server.ServerWorldMixin"
   ],
   "injectors": {
     "defaultRequire": 1

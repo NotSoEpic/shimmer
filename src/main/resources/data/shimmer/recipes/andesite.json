@@ -1,0 +1,9 @@
+{
+  "type": "shimmer:transmuting",
+  "input": {
+    "item": "minecraft:andesite"
+  },
+  "output": [
+    "minecraft:tuff"
+  ]
+}

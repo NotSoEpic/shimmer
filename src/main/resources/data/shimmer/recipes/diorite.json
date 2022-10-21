@@ -1,0 +1,9 @@
+{
+  "type": "shimmer:transmuting",
+  "input": {
+    "item": "minecraft:diorite"
+  },
+  "output": [
+    "minecraft:calcite"
+  ]
+}

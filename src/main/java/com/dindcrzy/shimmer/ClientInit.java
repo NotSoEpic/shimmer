@@ -1,5 +1,8 @@
 package com.dindcrzy.shimmer;
 
+import com.dindcrzy.shimmer.mixin.client.WorldRendererAccessor;
+import com.dindcrzy.shimmer.xray.EffectManager;
+import com.dindcrzy.shimmer.xray.Renderer;
 import ladysnake.satin.api.event.PostWorldRenderCallback;
 import ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import ladysnake.satin.api.experimental.ReadableDepthFramebuffer;
@@ -11,8 +14,10 @@ import ladysnake.satin.api.managed.uniform.Uniform4f;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -26,6 +31,7 @@ public class ClientInit implements ClientModInitializer {
     public void onInitializeClient() {
         fluidRendering();
         shaderStuff();
+        spelunkerStuff();
     }
     
     private void fluidRendering() {
@@ -91,6 +97,31 @@ public class ClientInit implements ClientModInitializer {
             strengthF.set((float) strength);
             
             // todo: pass in FOV somehow. Vanilla's _FOV doesn't work
+            // also view bobbing isnt part of camera pos/rotation?
         });
+    }
+    
+    // https://github.com/Leximon/Spelunker/blob/1b878a3e1cc026e617244240ad9e26fa328450cf/src/main/java/de/leximon/spelunker/SpelunkerModClient.java#L32
+    
+    public static Renderer renderer = new Renderer();
+    public static boolean isAlreadyRenderingOutline = false;
+    
+    private void spelunkerStuff() {
+        WorldRenderEvents.LAST.register(context -> {
+            WorldRendererAccessor worldRenderer = (WorldRendererAccessor) context.worldRenderer();
+            
+            if (renderer.isActive()) {
+                if (!isAlreadyRenderingOutline) { // stops stuff from happening ig
+                    worldRenderer.getEntityOutlineShader().render(context.tickDelta());
+                    mc.getFramebuffer().beginWrite(false);
+                }
+                renderer.render(context.matrixStack(), context.camera(), worldRenderer.getBufferBuilders().getOutlineVertexConsumers());
+            }
+            isAlreadyRenderingOutline = false;
+        });
+        
+        ClientPlayNetworking.registerGlobalReceiver(
+                EffectManager.ORE_PACKET, ((client, handler, buf, responseSender) -> 
+                        EffectManager.readPacket(renderer, buf)));
     }
 }

@@ -1,4 +1,4 @@
-package com.dindcrzy.shimmer.mixin;
+package com.dindcrzy.shimmer.mixin.client;
 
 import com.dindcrzy.shimmer.Helper;
 import com.dindcrzy.shimmer.ModInit;

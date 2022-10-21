@@ -179,8 +179,10 @@ void main() {
         float distance = length(pixVector) * depth;
         
         // do cool star stuff here!
-        vec3 starcol = starLayer(rotated, CamPos, 40);
+        // this creates quite visible poor performance :(
+        //vec3 starcol = starLayer(rotated, CamPos, 40);
         //gl_FragColor = vec4(starcol, 1.);
+        vec3 starcol = vec3(0.);
         // stop doing cool star stuff here :/
         
         vec3 incol = texture2D(DiffuseSampler, texCoord).rgb;

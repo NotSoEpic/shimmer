@@ -6,7 +6,7 @@
   "name": "Shimmer",
   "description": "Adds the mysterious and elusive liquid from Terraria into minecraft, ethereal properties and all",
   "authors": [
-    "Me!"
+    "dindcrzy"
   ],
   "contact": {
     "homepage": "",
@@ -34,8 +34,5 @@
     "fabric": "*",
     "minecraft": "~1.18.2",
     "java": ">=17"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }

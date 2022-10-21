@@ -1,0 +1,9 @@
+{
+  "type": "shimmer:transmuting",
+  "input": {
+    "item": "minecraft:granite"
+  },
+  "output": [
+    "minecraft:dripstone_block"
+  ]
+}
